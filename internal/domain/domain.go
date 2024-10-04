@@ -30,3 +30,54 @@ func (m *Meeting) CheckMeetingNameNotWhitespace() error {
 	}
 	return nil
 }
+
+func (m *Meeting) CheckMeetingPlaceNotWhitespace() error {
+	if strings.TrimSpace(m.Place) == "" {
+		return errors.New(` "неверное значение, ссылка должна начинаться с http"`)
+	}
+	return nil
+}
+
+func (m *Meeting) CheckCommentNotWhitespace() error {
+	if strings.TrimSpace(m.Place) == "" {
+		return errors.New(`введено недопустимое значение поля "Комментарий"`)
+	}
+	return nil
+}
+
+func (m *Meeting) CheckApplicantIDNotWhitespace() error {
+	if strings.TrimSpace(m.Place) == "" {
+		return errors.New(`введено недопустимое значение поля "Соискатель"`)
+	}
+	return nil
+}
+
+func (m *Meeting) CheckStartDateNotEmpty() error {
+	if m.StartDate.IsZero() {
+		return errors.New("дата начала обязательна для заполнения")
+	}
+	return nil
+}
+
+func (m *Meeting) CheckEndDateNotEmpty() error {
+	if m.EndDate.IsZero() {
+		return errors.New("дата конца обязательна для заполнения")
+	}
+	return nil
+}
+
+func (m *Meeting) CheckStartDateMinTime() error {
+	minTime := time.Date(m.StartDate.Year(), m.StartDate.Month(), m.StartDate.Day(), 8, 0, 0, 0, m.StartDate.Location())
+	if m.StartDate.Before(minTime) {
+		return errors.New("минимальное время начала встречи 08:00")
+	}
+	return nil
+}
+
+func (m *Meeting) CheckEndDateMaxTime() error {
+	maxTime := time.Date(m.EndDate.Year(), m.EndDate.Month(), m.EndDate.Day(), 19, 0, 0, 0, m.EndDate.Location())
+	if m.EndDate.After(maxTime) {
+		return errors.New("максимальное время окончания встречи 19:00")
+	}
+	return nil
+}
