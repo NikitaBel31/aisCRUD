@@ -1,9 +1,13 @@
 package domain
 
-import "time"
+import (
+	"errors"
+	"strings"
+	"time"
+)
 
 type Meeting struct {
-	ID             string    // Идентификатор встречи
+	//ID             string    // Идентификатор встречи
 	Name           string    // Название встречи
 	Place          string    // Место проведения
 	Comment        string    // Комментарий
@@ -18,4 +22,11 @@ type Meeting struct {
 	EmailAuthor    string    // Email организатора
 	IsViewMeeting  bool      // Признак просмотра за 15 минут
 	IsStartMeeting bool      // Признак начала встречи
+}
+
+func (m *Meeting) CheckMeetingNameNotWhitespace() error {
+	if strings.TrimSpace(m.Name) == "" {
+		return errors.New(`введено недопустимое значение поля "Название встречи"`)
+	}
+	return nil
 }
