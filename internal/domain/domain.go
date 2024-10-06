@@ -7,7 +7,7 @@ import (
 )
 
 type Meeting struct {
-	//ID             string    // Идентификатор встречи
+	ID             string    // Идентификатор встречи
 	Name           string    // Название встречи
 	Place          string    // Место проведения
 	Comment        string    // Комментарий

@@ -15,9 +15,8 @@ func NewMeetingService(repo *repository.MeetingRepository) *MeetingService {
 }
 
 func (s *MeetingService) CreateMeeting(meeting *domain.Meeting) error {
-	//fmt.Printf("StartDate: %v\n", meeting.StartDate)
 	if meeting == nil {
-		return errors.New("meeting can not be nil")
+		return errors.New("встреча пустая")
 	}
 
 	if err := meeting.CheckMeetingNameNotWhitespace(); err != nil {
@@ -53,4 +52,11 @@ func (s *MeetingService) CreateMeeting(meeting *domain.Meeting) error {
 	}
 
 	return s.repo.Create(meeting)
+}
+
+func (s *MeetingService) UpdateMeeting(meeting *domain.Meeting) error {
+	if meeting.ID == "" {
+		return errors.New("ID не заполнен")
+	}
+	return s.repo.Update(meeting)
 }

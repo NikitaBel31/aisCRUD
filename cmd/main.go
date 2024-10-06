@@ -35,7 +35,7 @@ func main() {
 
 	meetingHandler := handler.NewMeetingHandler(meetingService)
 
-	http.HandleFunc("/meetings", meetingHandler.CreateMeetingHandler)
+	http.HandleFunc("/meetings", meetingHandler.MeetingsHandler)
 
 	fmt.Println("Server is listening on port 8080")
 	err = http.ListenAndServe(":8080", nil)
