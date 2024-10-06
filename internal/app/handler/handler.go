@@ -6,6 +6,7 @@ import (
 	"ais/internal/dto"
 	"encoding/json"
 	"net/http"
+	"strings"
 )
 
 type MeetingHandler struct {
@@ -22,6 +23,8 @@ func (h *MeetingHandler) MeetingsHandler(w http.ResponseWriter, r *http.Request)
 		h.CreateMeetingHandler(w, r) // Обработка создания встречи
 	case http.MethodPut:
 		h.UpdateMeetingHandler(w, r) // Обработка обновления встречи
+	case http.MethodDelete:
+		h.DeleteMeetingHandler(w, r) //Обработка удаления встречи
 	default:
 		http.Error(w, "Метод не поддерживается", http.StatusMethodNotAllowed)
 	}
@@ -110,4 +113,25 @@ func (h *MeetingHandler) UpdateMeetingHandler(w http.ResponseWriter, r *http.Req
 	// Отправляем успешный ответ
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(meeting) // Отправляем обновленную встречу как ответ
+}
+
+func (h *MeetingHandler) DeleteMeetingHandler(w http.ResponseWriter, r *http.Request) {
+	// Извлекаем meetingID из URL, где путь будет "/meetings/{meetingId}"
+	parts := strings.Split(r.URL.Path, "/")
+	if len(parts) < 3 || parts[2] == "" {
+		http.Error(w, "ID встречи не указан", http.StatusBadRequest)
+		return
+	}
+	meetingID := parts[2] // Извлекаем meetingID
+
+	if err := h.service.DeleteMeeting(meetingID); err != nil {
+		if err.Error() == "встреча не найдена" {
+			http.Error(w, "Встреча не найдена", http.StatusNotFound)
+		} else {
+			http.Error(w, "Ошибка при удалении встречи", http.StatusInternalServerError)
+		}
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
 }

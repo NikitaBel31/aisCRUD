@@ -60,3 +60,10 @@ func (s *MeetingService) UpdateMeeting(meeting *domain.Meeting) error {
 	}
 	return s.repo.Update(meeting)
 }
+
+func (s *MeetingService) DeleteMeeting(meetingID string) error {
+	if meetingID == "" {
+		return errors.New("ID не заполнен")
+	}
+	return s.repo.Delete(meetingID)
+}

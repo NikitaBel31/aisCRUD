@@ -3,7 +3,6 @@ package repository
 import (
 	"ais/internal/domain"
 	"database/sql"
-	"errors"
 	"fmt"
 )
 
@@ -11,7 +10,6 @@ type MeetingRepository struct {
 	db *sql.DB
 }
 
-// NewMeetingRepository создает новый MeetingRepository.
 func NewMeetingRepository(db *sql.DB) *MeetingRepository {
 	return &MeetingRepository{db: db}
 }
@@ -50,7 +48,7 @@ func (r *MeetingRepository) Update(meeting *domain.Meeting) error {
 		WHERE id = $13
 	`
 
-	result, err := r.db.Exec(query, meeting.Name, meeting.Place, meeting.Comment,
+	_, err := r.db.Exec(query, meeting.Name, meeting.Place, meeting.Comment,
 		meeting.ApplicantID, meeting.StartDate, meeting.EndDate, meeting.IsFullDay,
 		meeting.IsOnline, meeting.IsOutlookEvent, meeting.EmailAuthor,
 		meeting.IsViewMeeting, meeting.IsStartMeeting, meeting.ID)
@@ -58,12 +56,14 @@ func (r *MeetingRepository) Update(meeting *domain.Meeting) error {
 		return fmt.Errorf("ошибка изменения встречи: %w", err)
 	}
 
-	rowsAffected, err := result.RowsAffected()
+	return nil
+}
+
+func (r *MeetingRepository) Delete(meetingID string) error {
+	query := `DELETE FROM tb_meeting WHERE id = $1`
+	_, err := r.db.Exec(query, meetingID)
 	if err != nil {
-		return fmt.Errorf("ошибка проверки результата изменения: %w", err)
-	}
-	if rowsAffected == 0 {
-		return errors.New("встреча не найдена")
+		return fmt.Errorf("ошибка удаления встречи: %w", err)
 	}
 
 	return nil
