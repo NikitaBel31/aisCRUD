@@ -3,6 +3,7 @@ package handler
 import (
 	"ais/internal/app/service"
 	"ais/internal/domain"
+	"ais/internal/dto"
 	"encoding/json"
 	"net/http"
 )
@@ -16,22 +17,51 @@ func NewMeetingHandler(service *service.MeetingService) *MeetingHandler {
 }
 
 func (h *MeetingHandler) CreateMeetingHandler(w http.ResponseWriter, r *http.Request) {
-
-	var meeting domain.Meeting
-	err := json.NewDecoder(r.Body).Decode(&meeting)
-	if err != nil {
-		http.Error(w, "Invalid input", http.StatusBadRequest)
+	if r.Method != http.MethodPost {
+		http.Error(w, "Метод не разрешен", http.StatusMethodNotAllowed)
 		return
 	}
 
-	err = h.service.CreateMeeting(&meeting)
-	if err != nil {
+	var req dto.CreateMeetingRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		http.Error(w, "Неверный формат запроса", http.StatusBadRequest)
+		return
+	}
+
+	// Преобразуем DTO в доменную сущность
+	meeting := domain.Meeting{
+		Name:           req.Name,
+		Place:          req.Place,
+		Comment:        req.Comment,
+		ApplicantID:    req.ApplicantID,
+		StartDate:      req.StartDate,
+		EndDate:        req.EndDate,
+		IsFullDay:      req.IsFullDay,
+		IsOnline:       req.IsOnline,
+		IsOutlookEvent: req.IsOutlookEvent,
+		EmailAuthor:    req.EmailAuthor,
+		IsViewMeeting:  req.IsViewMeeting,
+		IsStartMeeting: req.IsStartMeeting,
+	}
+
+	// Вызов метода сервиса для создания встречи
+	if err := h.service.CreateMeeting(&meeting); err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	//После тестов убрать
-	// Установка заголовка ответа (чтобы клиент знал, что это JSON)
-	w.Header().Set("Content-Type", "application/json")
-	json.NewEncoder(w).Encode(meeting)
+	// Подготовка ответа
+	response := dto.MeetingResponse{
+		Name:        meeting.Name,
+		Place:       meeting.Place,
+		StartDate:   meeting.StartDate,
+		EndDate:     meeting.EndDate,
+		IsFullDay:   meeting.IsFullDay,
+		IsOnline:    meeting.IsOnline,
+		EmailAuthor: meeting.EmailAuthor,
+	}
+
+	// Отправляем успешный ответ
+	w.WriteHeader(http.StatusCreated)
+	json.NewEncoder(w).Encode(response) // Отправляем созданную встречу как ответ
 }

@@ -4,6 +4,7 @@ import (
 	"ais/internal/app/repository"
 	"ais/internal/domain"
 	"errors"
+	"fmt"
 )
 
 type MeetingService struct {
@@ -15,6 +16,7 @@ func NewMeetingService(repo *repository.MeetingRepository) *MeetingService {
 }
 
 func (s *MeetingService) CreateMeeting(meeting *domain.Meeting) error {
+	fmt.Printf("StartDate: %v\n", meeting.StartDate)
 	if meeting == nil {
 		return errors.New("meeting can not be nil")
 	}

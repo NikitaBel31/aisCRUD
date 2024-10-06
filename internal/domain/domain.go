@@ -13,9 +13,7 @@ type Meeting struct {
 	Comment        string    // Комментарий
 	ApplicantID    string    // Соискатель
 	StartDate      time.Time // Дата начала
-	StartTime      time.Time // Время начала
 	EndDate        time.Time // Дата окончания
-	EndTime        time.Time // Время окончания
 	IsFullDay      bool      // Весь день
 	IsOnline       bool      // Онлайн встреча
 	IsOutlookEvent bool      // Создать событие в Outlook
@@ -59,25 +57,34 @@ func (m *Meeting) CheckStartDateNotEmpty() error {
 	return nil
 }
 
+// Проверка на наличие даты и времени конца встречи
 func (m *Meeting) CheckEndDateNotEmpty() error {
 	if m.EndDate.IsZero() {
-		return errors.New("дата конца обязательна для заполнения")
+		return errors.New("дата окончания обязательна для заполнения")
 	}
 	return nil
 }
 
+// Проверка минимального времени начала встречи (не раньше 8:00)
 func (m *Meeting) CheckStartDateMinTime() error {
-	minTime := time.Date(m.StartDate.Year(), m.StartDate.Month(), m.StartDate.Day(), 8, 0, 0, 0, m.StartDate.Location())
-	if m.StartDate.Before(minTime) {
-		return errors.New("минимальное время начала встречи 08:00")
+	if err := m.CheckStartDateNotEmpty(); err != nil {
+		return err
+	}
+
+	if m.StartDate.Hour() < 8 {
+		return errors.New("время начала встречи не может быть раньше 08:00")
 	}
 	return nil
 }
 
+// Проверка максимального времени окончания встречи (не позже 19:00)
 func (m *Meeting) CheckEndDateMaxTime() error {
-	maxTime := time.Date(m.EndDate.Year(), m.EndDate.Month(), m.EndDate.Day(), 19, 0, 0, 0, m.EndDate.Location())
-	if m.EndDate.After(maxTime) {
-		return errors.New("максимальное время окончания встречи 19:00")
+	if err := m.CheckEndDateNotEmpty(); err != nil {
+		return err
+	}
+
+	if m.EndDate.Hour() > 19 {
+		return errors.New("время окончания встречи не может быть позже 19:00")
 	}
 	return nil
 }
