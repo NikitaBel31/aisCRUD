@@ -12,6 +12,8 @@ services:
       - "5432:5432"
     networks:
       - my-network
+    volumes:
+      - ./migrations:/docker-entrypoint-initdb.d  
 
   app:
     build:
@@ -20,6 +22,19 @@ services:
     container_name: my-go-app
     ports:
       - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - my-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: my-pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8081:80" 
     depends_on:
       - db
     networks:
