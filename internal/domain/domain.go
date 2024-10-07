@@ -37,14 +37,14 @@ func (m *Meeting) CheckMeetingPlaceNotWhitespace() error {
 }
 
 func (m *Meeting) CheckCommentNotWhitespace() error {
-	if strings.TrimSpace(m.Place) == "" {
+	if strings.TrimSpace(m.Comment) == "" {
 		return errors.New(`введено недопустимое значение поля "Комментарий"`)
 	}
 	return nil
 }
 
 func (m *Meeting) CheckApplicantIDNotWhitespace() error {
-	if strings.TrimSpace(m.Place) == "" {
+	if strings.TrimSpace(m.ApplicantID) == "" {
 		return errors.New(`введено недопустимое значение поля "Соискатель"`)
 	}
 	return nil
