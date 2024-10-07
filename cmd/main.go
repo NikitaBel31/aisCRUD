@@ -14,7 +14,7 @@ import (
 
 func main() {
 	// Подключение к базе данных PostgreSQL
-	connStr := "host=localhost port=5432 user=postgres dbname=tb password=123434 sslmode=disable"
+	connStr := "host=host.docker.internal port=5432 user=postgres dbname=tb password=123434 sslmode=disable"
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
